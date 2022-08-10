@@ -24,24 +24,24 @@ class PlaceController extends Controller
                 $settlements = array();
                 $federalEntity = null;
                 $municipality = null;
-                foreach ($data as $key => $qs) {
-                    $respuesta['zip_code'] = $qs['d_codigo'];
-                    $respuesta['locality'] = mb_strtoupper($qs['d_ciudad'], 'utf-8');
+                foreach ($data as $key => $value) {
+                    $respuesta['zip_code'] = $value['d_codigo'];
+                    $respuesta['locality'] = strtoupper($this->replaceSpecialCharacters($value['d_ciudad']));
                     $federalEntity = array(
-                        "key" => $qs['c_estado'],
-                        "name" => mb_strtoupper($qs['d_estado'], 'utf-8'),
-                        "code" => $qs['c_CP']
+                        "key" => intval($value['c_estado']),
+                        "name" => strtoupper($this->replaceSpecialCharacters($value['d_estado'])),
+                        "code" => $value['c_CP']
                     );
                     $municipality = array(
-                        "key" => $qs['c_mnpio'],
-                        "name" => mb_strtoupper($qs['D_mnpio'], 'utf-8')
+                        "key" => intval($value['c_mnpio']),
+                        "name" => strtoupper($this->replaceSpecialCharacters($value['D_mnpio']))
                     );
                     $settlement = array(
-                        "key" => $qs['id_asenta_cpcons'],
-                        "name" => mb_strtoupper($qs['d_asenta'], 'utf-8'),
-                        "zone_type" => $qs['d_zona'],
+                        "key" => intval($value['id_asenta_cpcons']),
+                        "name" => strtoupper($this->replaceSpecialCharacters($value['d_asenta'])),
+                        "zone_type" => strtoupper($value['d_zona']),
                         "settlement_type" => array(
-                            "name" => $qs['d_tipo_asenta']
+                            "name" => $value['d_tipo_asenta']
                         )
                     );
                     array_push($settlements, $settlement);
@@ -61,4 +61,42 @@ class PlaceController extends Controller
         return response()->json($respuesta, $responseCode);
 
     }
+
+    function replaceSpecialCharacters($cadena) : String
+    {
+        $cadena = str_replace(
+            array('Á', 'À', 'Â', 'Ä', 'á', 'à', 'ä', 'â', 'ª'),
+            array('A', 'A', 'A', 'A', 'a', 'a', 'a', 'a', 'a'),
+            $cadena
+        );
+
+        $cadena = str_replace(
+            array('É', 'È', 'Ê', 'Ë', 'é', 'è', 'ë', 'ê'),
+            array('E', 'E', 'E', 'E', 'e', 'e', 'e', 'e'),
+            $cadena );
+
+        $cadena = str_replace(
+            array('Í', 'Ì', 'Ï', 'Î', 'í', 'ì', 'ï', 'î'),
+            array('I', 'I', 'I', 'I', 'i', 'i', 'i', 'i'),
+            $cadena );
+
+        $cadena = str_replace(
+            array('Ó', 'Ò', 'Ö', 'Ô', 'ó', 'ò', 'ö', 'ô'),
+            array('O', 'O', 'O', 'O', 'o', 'o', 'o', 'o'),
+            $cadena );
+
+        $cadena = str_replace(
+            array('Ú', 'Ù', 'Û', 'Ü', 'ú', 'ù', 'ü', 'û'),
+            array('U', 'U', 'U', 'U', 'u', 'u', 'u', 'u'),
+            $cadena );
+
+        $cadena = str_replace(
+            array('Ñ', 'ñ', 'Ç', 'ç'),
+            array('?', '?', '?', '?'),
+            $cadena
+        );
+
+        return $cadena;
+    }
+
 }

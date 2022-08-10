@@ -9,7 +9,7 @@ Test para BACKBONE Backend Developer
 
 
 ## Despliegue en HEROKU
-https://backbone-lumen.herokuapp.com/
+https://backbone-laravel.herokuapp.com/
 
 ## Requerimientos
 
